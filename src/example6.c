@@ -18,21 +18,33 @@
 
 #include "common.h"
 
+#ifndef FORCE_STRUCT
 union elem {
 	char c;
 	short s;
 	int i;
 	double d;
 };
+typedef union elem elem_t;
+#else
+struct elem {
+	double d;
+	int i;
+	short s;
+	char c;
+};
+typedef struct elem elem_t;
+#endif /* FORCE_STRUCT */
 
 struct node {
-	union elem data;
+	/* opaque type depending on whether FORCE_STRUCT is specified or not */
+	elem_t data;
 	struct node *next;
 };
 
 int main()
 {
-	print_size(union elem);
+	print_size(elem_t);
 	print_size(struct node);
 
 	print_member_info(struct node, data);
