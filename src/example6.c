@@ -49,4 +49,6 @@ int main()
 
 	print_member_info(struct node, data);
 	print_member_info(struct node, next);
+
+	return 0;
 };
