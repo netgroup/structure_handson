@@ -57,8 +57,8 @@ int main()
 	else
 		printf("b1 and b2 are NOT equal\n");
 
-	free(b1);
-	free(b2);
+	heap_free(b1);
+	heap_free(b2);
 
 	return !!result;
 }
