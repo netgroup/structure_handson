@@ -23,6 +23,12 @@ SOURCES = $(wildcard $(SRCDIR)/*.c)
 HEADERS = $(wildcard $(SRCDIR)/*.h)
 EXECUTABLES = $(patsubst $(SRCDIR)/%.c, $(BUILDDIR)/%, $(SOURCES))
 
+# If the user defined CONFIG_HEAP_RANDOM_GARBAGE on the command line,
+# add the corresponding -D option to CFLAGS.
+ifdef CONFIG_HEAP_RANDOM_GARBAGE
+CFLAGS += -DCONFIG_HEAP_RANDOM_GARBAGE=1
+endif
+
 .PHONY: all clean
 
 all: $(EXECUTABLES)

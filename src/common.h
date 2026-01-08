@@ -62,26 +62,49 @@
 	printf("size of '%s' is %lu bytes\n", stringify(obj), sizeof(obj))
 
 #define __noinline __attribute__ ((noinline))
+#define __unused __attribute__((unused))
 
-static inline void heap_alloc_init(void)
+#ifdef CONFIG_HEAP_RANDOM_GARBAGE
+static inline void __srand_init(void)
 {
 	srand(time(NULL));
 }
 
-static inline void *heap_alloc(size_t size)
+static inline int
+fill_heap_with_random_garbage(unsigned char *p, size_t size)
 {
-	unsigned char *p = malloc(size);
 	static int initialized = 0;
 	int i;
 
-	if (!(initialized++))
-		heap_alloc_init();
+	if (!initialized)
+		__srand_init();
+
+	++initialized;
 
 	if (!p)
-		return NULL;
+		return -ENOMEM;
 
 	for(i = 0; i < size; ++i)
 		p[i] = rand() & 0xff;
+
+	return 0;
+}
+#else
+static inline int
+fill_heap_with_random_garbage(unsigned char *p __unused, size_t size __unused)
+{
+	return 0;
+}
+#endif
+
+static inline void *heap_alloc(size_t size)
+{
+	unsigned char *p = malloc(size);
+	int rc;
+
+	rc = fill_heap_with_random_garbage(p, size);
+	if (rc)
+		return NULL;
 
 	return (void *)p;
 }
